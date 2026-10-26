@@ -1,0 +1,134 @@
+{
+  "test": [
+    {
+      "Method": "B0 (Coast / Do Nothing)",
+      "Mean Return": -185.9,
+      "Mean Fuel (m/s)": 0.0,
+      "Violation Rate": "26.2%",
+      "Violations / Total": "16 / 61",
+      "Max Drift (m)": 0.0
+    },
+    {
+      "Method": "B1 (Random)",
+      "Mean Return": -1193.2,
+      "Mean Fuel (m/s)": 1.0,
+      "Violation Rate": "0.0%",
+      "Violations / Total": "0 / 61",
+      "Max Drift (m)": 190266.4
+    },
+    {
+      "Method": "B2 (CARA Threshold Rule)",
+      "Mean Return": -1510.2,
+      "Mean Fuel (m/s)": 0.3907,
+      "Violation Rate": "0.0%",
+      "Violations / Total": "0 / 61",
+      "Max Drift (m)": 614706.5
+    },
+    {
+      "Method": "B3 (Tuned Threshold Rule)",
+      "Mean Return": -1766.3,
+      "Mean Fuel (m/s)": 0.4027,
+      "Violation Rate": "1.6%",
+      "Violations / Total": "1 / 61",
+      "Max Drift (m)": 630836.0
+    },
+    {
+      "Method": "B4 (Greedy Separation)",
+      "Mean Return": -1849.6,
+      "Mean Fuel (m/s)": 0.488,
+      "Violation Rate": "0.0%",
+      "Violations / Total": "0 / 61",
+      "Max Drift (m)": 670708.9
+    },
+    {
+      "Method": "B5 (Oracle Upper Bound)",
+      "Mean Return": -35.3,
+      "Mean Fuel (m/s)": 0.0047,
+      "Violation Rate": "3.3%",
+      "Violations / Total": "2 / 61",
+      "Max Drift (m)": 8915.1
+    },
+    {
+      "Method": "RL: PPO (Trained)",
+      "Mean Return": -304.4,
+      "Mean Fuel (m/s)": 0.0667,
+      "Violation Rate": "26.2%",
+      "Violations / Total": "16 / 61",
+      "Max Drift (m)": 250197.6
+    },
+    {
+      "Method": "RL: DQN (Trained)",
+      "Mean Return": -407.6,
+      "Mean Fuel (m/s)": 0.1,
+      "Violation Rate": "24.6%",
+      "Violations / Total": "15 / 61",
+      "Max Drift (m)": 173416.4
+    }
+  ],
+  "tle": [
+    {
+      "Method": "B0 (Coast / Do Nothing)",
+      "Mean Return": -201.7,
+      "Mean Fuel (m/s)": 0.0,
+      "Violation Rate": "11.5%",
+      "Violations / Total": "7 / 61",
+      "Max Drift (m)": 0.0
+    },
+    {
+      "Method": "B1 (Random)",
+      "Mean Return": -1270.2,
+      "Mean Fuel (m/s)": 1.0,
+      "Violation Rate": "0.0%",
+      "Violations / Total": "0 / 61",
+      "Max Drift (m)": 245876.6
+    },
+    {
+      "Method": "B2 (CARA Threshold Rule)",
+      "Mean Return": -531.5,
+      "Mean Fuel (m/s)": 0.2217,
+      "Violation Rate": "0.0%",
+      "Violations / Total": "0 / 61",
+      "Max Drift (m)": 467476.6
+    },
+    {
+      "Method": "B3 (Tuned Threshold Rule)",
+      "Mean Return": -730.7,
+      "Mean Fuel (m/s)": 0.2457,
+      "Violation Rate": "0.0%",
+      "Violations / Total": "0 / 61",
+      "Max Drift (m)": 532531.6
+    },
+    {
+      "Method": "B4 (Greedy Separation)",
+      "Mean Return": -563.3,
+      "Mean Fuel (m/s)": 0.2717,
+      "Violation Rate": "0.0%",
+      "Violations / Total": "0 / 61",
+      "Max Drift (m)": 474355.3
+    },
+    {
+      "Method": "B5 (Oracle Upper Bound)",
+      "Mean Return": -15.7,
+      "Mean Fuel (m/s)": 0.0023,
+      "Violation Rate": "0.0%",
+      "Violations / Total": "0 / 61",
+      "Max Drift (m)": 7751.6
+    },
+    {
+      "Method": "RL: PPO (Trained)",
+      "Mean Return": -715.2,
+      "Mean Fuel (m/s)": 0.1333,
+      "Violation Rate": "8.2%",
+      "Violations / Total": "5 / 61",
+      "Max Drift (m)": 629563.1
+    },
+    {
+      "Method": "RL: DQN (Trained)",
+      "Mean Return": -757.6,
+      "Mean Fuel (m/s)": 0.2,
+      "Violation Rate": "9.8%",
+      "Violations / Total": "6 / 61",
+      "Max Drift (m)": 553815.4
+    }
+  ]
+}
