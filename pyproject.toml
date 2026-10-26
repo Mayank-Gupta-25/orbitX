@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orbitx"
+version = "0.1.0"
+description = "OrbitX: reinforcement learning for satellite collision avoidance"
+requires-python = ">=3.10"
+dependencies = ["numpy", "scipy", "pandas"]
+
+[tool.setuptools.packages.find]
+include = ["orbitx*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"

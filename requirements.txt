@@ -1,0 +1,17 @@
+numpy>=1.26
+scipy>=1.11
+pandas>=2.1
+pyarrow>=14
+sgp4>=2.23
+pyyaml
+tqdm
+matplotlib
+plotly
+pytest
+# RL stack (used from Phase 3 onward)
+gymnasium>=1.0
+stable-baselines3>=2.3
+sb3-contrib>=2.3
+rliable
+tensorboard
+# torch is installed separately (CPU build): pip install torch --index-url https://download.pytorch.org/whl/cpu
