@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrbitX - Mission Control & 3D Satellite Collision Avoidance Console</title>
+  <meta name="description" content="Cinematic interactive 3D satellite collision avoidance mission control console powered by Deep Reinforcement Learning. Developed by Mayank Gupta and Soumya Sekhar Parida.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+
+  <!-- Three.js and OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <!-- Fullscreen 3D Canvas Background -->
+  <div id="canvas-container"></div>
+
+  <!-- Top Navigation / Telemetry Header -->
+  <header class="top-bar">
+    <div class="brand-section">
+      <div class="brand-logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(30 12 12)"/>
+          <circle cx="12" cy="12" r="2" fill="#00f0ff"/>
+        </svg>
+        <span>ORBIT<span style="color: #fff;">X</span></span>
+      </div>
+      <span class="brand-badge">AEROSPACE OPS</span>
+      <span class="authors-tag">Mayank Gupta &bull; Soumya Sekhar Parida</span>
+    </div>
+
+    <div class="header-telemetry">
+      <div class="telem-pill">
+        <div class="status-dot"></div>
+        <span id="sim-status">ONLINE (SGP4/CW)</span>
+      </div>
+      <div class="telem-pill">
+        <span style="color: #64748b;">TARGET:</span>
+        <span id="target-name" style="color: #00f0ff; font-weight: 700;">YAOGAN-7 (LEO)</span>
+      </div>
+      <div class="telem-pill">
+        <span id="utc-clock">2026-10-24 12:00:00 UTC</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Grid Over 3D Scene -->
+  <main class="dashboard-grid">
+
+    <!-- Left Sidebar: Mission Status, Live Propagation & Telemetry -->
+    <aside class="left-sidebar">
+      
+      <!-- Panel 1: Mission Telemetry -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <span>Mission Telemetry</span>
+          <span style="font-size: 10px; color: #64748b;">LEO ORBIT</span>
+        </div>
+        <div class="panel-content">
+          <div class="kv-row">
+            <span class="kv-key">Target Semi-Major:</span>
+            <span class="kv-val cyan">7018.4 km</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">Orbital Period:</span>
+            <span class="kv-val">97.4 min</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">Debris Tracked:</span>
+            <span class="kv-val" id="total-debris-count">1,200</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">Screened Encounters:</span>
+            <span class="kv-val amber" id="active-candidates-count">377 events</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">Closest Approach:</span>
+            <span class="kv-val rose" id="closest-approach-val">0.82 km</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 2: Live Propagation Progress -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <span>SGP4 Screening Pipeline</span>
+          <span class="tag-badge tag-nominal">COMPLETED</span>
+        </div>
+        <div class="panel-content">
+          <div class="kv-row">
+            <span class="kv-key">Propagation Grid:</span>
+            <span class="kv-val">10.0s &bull; Refined 0.1s</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">Processed Objects:</span>
+            <span class="kv-val cyan">1,200 / 1,200</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">Completion:</span>
+            <span class="kv-val emerald" id="progress-percent">100.0%</span>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar-fill" id="sim-progress-bar"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 3: Encounter Range Telemetry Plot -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <span>Relative Range Profile (TCA &plusmn; 60s)</span>
+        </div>
+        <div class="panel-content">
+          <canvas id="chart-range-canvas" width="308" height="110" style="width: 100%; border-radius: 6px; background: rgba(0,0,0,0.3);"></canvas>
+          <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-top: 4px; font-family: var(--font-mono);">
+            <span>-60s</span>
+            <span style="color: #ef4444;">TCA (Closest)</span>
+            <span>+60s</span>
+          </div>
+        </div>
+      </section>
+
+    </aside>
+
+    <!-- Center Viewport Top HUD Controls -->
+    <div class="center-viewport">
+      <div class="viewport-hud-top">
+        <div class="camera-controls-bar">
+          <button class="cam-btn active" data-mode="global">🌐 GLOBAL ORBIT</button>
+          <button class="cam-btn" data-mode="chase">🛰️ TARGET CHASE</button>
+          <button class="cam-btn" data-mode="encounter">🎯 B-PLANE ENCOUNTER</button>
+        </div>
+
+        <div class="encounter-alert-banner">
+          <span class="alert-icon">&#9888;</span>
+          <div>
+            <div style="font-size: 11px; font-weight: bold; color: #ef4444;">ACTIVE FLY-BY ALERT</div>
+            <div style="font-size: 10px; color: #94a3b8;">Threshold &lt; 5.0 km Screening Zone</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar: Closest-Approach Monitor & RL Inspector -->
+    <aside class="right-sidebar">
+
+      <!-- Conjunctions Table -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <span>Closest-Approach Monitor</span>
+          <span style="font-size: 10px; color: #64748b;">377 SCREENED</span>
+        </div>
+        <div class="encounter-table-container">
+          <table class="encounter-table">
+            <thead>
+              <tr>
+                <th>DEBRIS OBJECT</th>
+                <th>MISS (KM)</th>
+                <th>V_REL</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="encounter-table-body">
+              <!-- Populated dynamically by dashboard_app.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Selected Encounter Telemetry -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <span>Selected Conjunction Detail</span>
+          <span id="detail-status-badge" class="tag-badge tag-warning">SCREENED</span>
+        </div>
+        <div class="panel-content">
+          <div class="kv-row">
+            <span class="kv-key">Debris:</span>
+            <span class="kv-val" id="detail-debris-name" style="color: #ef4444;">COSMOS 2251 DEB [33899]</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">Predicted Miss:</span>
+            <span class="kv-val rose" id="detail-miss-dist">12.44 km</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">Relative Speed:</span>
+            <span class="kv-val cyan" id="detail-relative-speed">3.59 km/s</span>
+          </div>
+          <div class="kv-row">
+            <span class="kv-key">TCA Offset:</span>
+            <span class="kv-val" id="detail-tca-time">TCA +254984.2s</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- RL Policy Collision Avoidance Inspector -->
+      <section class="glass-panel rl-card">
+        <div class="panel-header">
+          <span>Autonomous RL Avoidance (PPO)</span>
+          <span class="tag-badge tag-nominal">POLICY ACTIVE</span>
+        </div>
+        <div class="panel-content">
+          <p style="font-size: 11px; color: #94a3b8; line-height: 1.4;">
+            Evaluate trained PPO policy to compute optimal minimum-fuel impulse burn (&Delta;v) 24h before TCA.
+          </p>
+
+          <button id="btn-run-rl" class="rl-cta-btn">
+            ⚡ EXECUTE PPO AVOIDANCE BURN
+          </button>
+
+          <div id="rl-metrics-card" style="display: none; margin-top: 10px; border-top: 1px solid rgba(0, 240, 255, 0.2); padding-top: 8px;">
+            <div class="kv-row">
+              <span class="kv-key">Impulse Burn (&Delta;v):</span>
+              <span class="kv-val cyan" id="rl-deltav-val">66.7 mm/s</span>
+            </div>
+            <div class="kv-row">
+              <span class="kv-key">Fuel Expenditure:</span>
+              <span class="kv-val emerald" id="rl-fuel-val">0.0667 m/s (&gt;82% saved)</span>
+            </div>
+            <div class="kv-row">
+              <span class="kv-key">Cleared Miss Distance:</span>
+              <span class="kv-val emerald" id="rl-cleared-miss">18.52 km</span>
+            </div>
+            <div class="kv-row">
+              <span class="kv-key">Safety Verification:</span>
+              <span class="tag-badge tag-nominal" id="rl-status-badge">COLLISION AVOIDED</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </aside>
+
+    <!-- Bottom Timeline and Playback Controls -->
+    <footer class="glass-panel timeline-controls">
+      <div class="playback-buttons">
+        <button id="btn-reset" class="ctrl-btn" title="Reset to Start">&#9198;</button>
+        <button id="btn-play" class="ctrl-btn play-btn" title="Play/Pause">❚❚</button>
+      </div>
+
+      <div class="timeline-slider-box">
+        <div class="slider-labels">
+          <span>SIMULATION TIMELINE</span>
+          <span id="sim-time-readout" style="color: #00f0ff;">+0.0s (x100)</span>
+        </div>
+        <input type="range" id="timeline-slider" class="timeline-slider" min="0" max="100" value="0">
+      </div>
+
+      <div class="speed-selector">
+        <button class="speed-btn" data-speed="1">1x</button>
+        <button class="speed-btn" data-speed="10">10x</button>
+        <button class="speed-btn active" data-speed="100">100x</button>
+        <button class="speed-btn" data-speed="1000">1000x</button>
+      </div>
+
+      <div class="toggles-group">
+        <label class="toggle-item">
+          <input type="checkbox" id="toggle-orbits" checked> Orbits
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="toggle-trails" checked> Trails
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="toggle-debris-cloud" checked> Debris Cloud
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="toggle-earth-rot" checked> Earth Spin
+        </label>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Application Logic Scripts -->
+  <script src="js/earth_textures.js"></script>
+  <script src="js/scene3d.js"></script>
+  <script src="js/orbit_renderer.js"></script>
+  <script src="js/dashboard_app.js"></script>
+</body>
+</html>
